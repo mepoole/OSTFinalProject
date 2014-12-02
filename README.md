@@ -1,4 +1,4 @@
 OSTFinalProject
 ===============
 
-Final project for Open Source Tools Fall 2014
+Final project for Open Source Tools Fall 2014.
