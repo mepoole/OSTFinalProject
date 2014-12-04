@@ -3,13 +3,40 @@
 
 </head>
   <body>
-  <p>Hello Django!</p>
-  
+    <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
+
+      <br>
+        <h1>The Question Forum</h1>
+      <h3>Question List:</h3>
+      {% for question in questions %}
+        <b>{{ question.author.nickname }}/{{ question.title }}</b>
+      <p>{{ question.content|escape }}</p>
+      <p><a href="#">View Full Question</a> | <a href="#">View Answers</a></p>
+      <hr>
+    {% endfor %}
+    {% if user %}
+    <h3>Ask a Question:</h3>
       <form action="/NewQuestion" method="post">
+      <p>Give your question a title:</p>
+      <div><input type="text" name="title"></div>
+      <p>Tags:
+      <input type="checkbox" value="serious" name="tags"> serious
+      <input type="checkbox" value="funny" name="tags"> funny
+      <input type="checkbox" value="weird" name="tags"> weird
+      <input type="checkbox" value="rhetorical" name="tags"> rhetorical
+      <input type="checkbox" value="socratic" name="tags"> socratic
+      <input type="checkbox" value="impertinent" name="tags"> impertinent
+      <input type="checkbox" value="unreasonable" name="tags"> unreasonable
+
+      
+      
+      </p>
+      <p>What's your question?</p>
       <div><textarea name="content" rows="3" cols="60"></textarea></div>
       <div><input type="submit" value="Add a New Question"></div>
     </form>
+    {% endif %}
 
-    <a href="{{ url }}">{{ url_linktext }}</a>
+
     </body>
 </html>
