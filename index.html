@@ -9,9 +9,14 @@
         <h1>The Question Forum</h1>
       <h3>Question List:</h3>
       {% for question in questions %}
-        <b>{{ question.author.nickname }}/{{ question.title }}</b>
-      <p>{{ question.content|escape }}</p>
-      <p><a href="#">View Full Question</a> | <a href="#">View Answers</a></p>
+        <strong>{{ question.author.nickname }}/{{ question.title }}</strong>
+        <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
+      <p>{{ question.content|slice:":500"|escape }}
+      {% if question.content|slice:":500" != question.content%}
+        <strong>. . .</strong>
+        {% endif %}
+        </p>
+      <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="#">View Question/Answer Activity</a></p>
       <hr>
     {% endfor %}
     {% if user %}

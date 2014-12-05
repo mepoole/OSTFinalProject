@@ -14,14 +14,14 @@ def forum_key(forum_name=DEFAULT_FORUM_NAME):
 
 class Question(ndb.Model):
     author = ndb.UserProperty()
-    title = ndb.StringProperty(indexed=False)
+    title = ndb.StringProperty()
     content = ndb.StringProperty(indexed=False)
     tags = ndb.JsonProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
     
 class Answer(ndb.Model):
     author = ndb.UserProperty()
-    title = ndb.StringProperty(indexed=False)
+    title = ndb.StringProperty()
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -36,16 +36,30 @@ class NewQuestion (webapp2.RequestHandler):
             question.content = self.request.get('content')
             question.author=users.get_current_user()
             question.title=self.request.get('title')
+            question.tags=self.request.get('tags', allow_multiple=True)
             question.put()
         self.redirect('/')
 
 class QuestionDetail(webapp2.RequestHandler):
     def get(self):
-        question=self.request.get('question')
+        if self.request.get('questionKey'):
+            questionKey=self.request.get('questionKey')
+            question=ndb.Key(urlsafe=questionKey).get()
+            template_values = {
+            'user' : users.get_current_user(),
+            'question' : question,
+        }
+        
+        path = os.path.join(os.path.dirname(__file__), 'QuestionDetail.html')
+        self.response.out.write(template.render(path, template_values))
+        
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
         questions = Question.query(ancestor=forum_key()).order(-Question.date)
+        questions=questions.fetch(10, offset=0)
+        #for question in questions:
+            #question.key.delete()
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
             url_linktext = 'Logout'
