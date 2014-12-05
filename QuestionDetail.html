@@ -4,6 +4,7 @@
 </head>
   <body>
           <b>{{ question.author.nickname }}/{{ question.title }}</b>
+                  <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
       <p>{{ question.content|escape }}</p>
       <p><a href="/">Back to Main Page</a> | <a href="#">View Question/Answer Activity</a></p>

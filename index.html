@@ -3,6 +3,7 @@
 
 </head>
   <body>
+    
     <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
 
       <br>
@@ -10,18 +11,30 @@
       <h3>Question List:</h3>
       {% for question in questions %}
         <strong>{{ question.author.nickname }}/{{ question.title }}</strong>
+        <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
-      <p>{{ question.content|slice:":500"|escape }}
+      <p>{{ question.content|slice:":500"|escape|urlize }}
       {% if question.content|slice:":500" != question.content%}
-        <strong>. . .</strong>
+        <strong><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">. . .</a></strong>
         {% endif %}
         </p>
       <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="#">View Question/Answer Activity</a></p>
+          {% if question.image %}        
+        <div><img src="/Image?questionKey={{ question.key.urlsafe }}"></img></div>
+          {% endif %}
       <hr>
     {% endfor %}
+          {%if prevLink %}
+        <a href="/?offset={{ offset|add:-10 }}">&#60;Prev </a>
+          {% endif %}
+          {% if nextLink %}
+      <a href="/?offset={{ offset }}">Next></a>
+             <hr> 
+      {% endif %}
+
     {% if user %}
     <h3>Ask a Question:</h3>
-      <form action="/NewQuestion" method="post">
+      <form action="/NewQuestion" method="post" enctype="multipart/form-data">
       <p>Give your question a title:</p>
       <div><input type="text" name="title"></div>
       <p>Tags:
@@ -38,6 +51,7 @@
       </p>
       <p>What's your question?</p>
       <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div>Add an image: <input type="file" name="image"></div>
       <div><input type="submit" value="Add a New Question"></div>
     </form>
     {% endif %}
