@@ -16,12 +16,13 @@
       <p>{{ question.content|slice:":500"|escape|urlize }}
       {% if question.content|slice:":500" != question.content%}
         <strong><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">. . .</a></strong>
-        {% endif %}
+      {% endif %}
+                {% if question.imageURL %}        
+        <div><img src="{{ question.imageURL }}"></img></div>
+          {% endif %}
         </p>
       <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="#">View Question/Answer Activity</a></p>
-          {% if question.image %}        
-        <div><img src="/Image?questionKey={{ question.key.urlsafe }}"></img></div>
-          {% endif %}
+
       <hr>
     {% endfor %}
           {%if prevLink %}
@@ -34,7 +35,7 @@
 
     {% if user %}
     <h3>Ask a Question:</h3>
-      <form action="/NewQuestion" method="post" enctype="multipart/form-data">
+      <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
       <p>Give your question a title:</p>
       <div><input type="text" name="title"></div>
       <p>Tags:
