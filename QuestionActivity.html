@@ -1,0 +1,45 @@
+<html>
+  <head>
+
+</head>
+  <body>
+        <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
+                <h2>Question/Answer Activity</h2>
+          <b>{{ question.author.nickname }}/{{ question.title }}</b>
+                  <div><i>{{question.date}}</i></div>
+        <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
+      <p>{{ question.content|escape }}</p>
+                      {% if question.imageURL %}        
+        <div><img src="{{ question.imageURL }}"></img></div>
+          {% endif %}
+
+      <p><a href="/">Back to Main Page</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
+      <hr>
+        <h3>Answer List:</h3>
+        <hr>
+      {% for answer in answers %}
+        <strong>{{ answer.author.nickname }}/{{ answer.title }}</strong>
+        <div><i>{{answer.date}}</i></div>
+      <p>{{ answer.content|escape|urlize }}
+                {% if answer.imageURL %}        
+        <div><img src="{{ answer.imageURL }}"></img></div>
+          {% endif %}
+        </p>
+      {% if answer.author == user %}<p><a href="/Edit?key={{ answer.key.urlsafe }}&type=answer">Edit Answer</a></p>{% endif %}
+      <hr>
+      {% endfor %}
+          {% if user %}
+    <h3>Give an Answer</h3>
+      <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="form" value="answer">
+      <p>Give your answer a title:</p>
+      <div><input type="text" name="title"></div>
+      <p>What's your answer?</p>
+      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div>Add an image: <input type="file" name="image"></div>
+      <input type="hidden" name="questionKey" value="{{ question.key.urlsafe }}">
+      <div><input type="submit" value="Add a New Answer"></div>
+    </form>
+    {% endif %}
+    </body>
+</html>

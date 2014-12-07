@@ -21,7 +21,7 @@
         <div><img src="{{ question.imageURL }}"></img></div>
           {% endif %}
         </p>
-      <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="#">View Question/Answer Activity</a></p>
+      <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="/QuestionActivity?questionKey={{ question.key.urlsafe }}">View Question/Answer Activity</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
 
       <hr>
     {% endfor %}
@@ -36,6 +36,7 @@
     {% if user %}
     <h3>Ask a Question:</h3>
       <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="form" value="question">
       <p>Give your question a title:</p>
       <div><input type="text" name="title"></div>
       <p>Tags:

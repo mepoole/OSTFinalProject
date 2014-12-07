@@ -7,6 +7,9 @@
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
       <p>{{ question.content|escape }}</p>
-      <p><a href="/">Back to Main Page</a> | <a href="#">View Question/Answer Activity</a></p>
+                      {% if question.imageURL %}        
+        <div><img src="{{ question.imageURL }}"></img></div>
+          {% endif %}
+      <p><a href="/">Back to Main Page</a> | <a href="/QuestionActivity?questionKey={{ question.key.urlsafe }}">View Question/Answer Activity</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
     </body>
 </html>

@@ -1,0 +1,48 @@
+<html>
+  <head>
+
+</head>
+  <body>
+
+    {% if type == "answer" %}
+    <h3>Edit Answer</h3>
+      <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="form" value="answer">
+      <p>Change answer title:</p>
+      <div><input type="text" name="title" value="{{item.title}}"></div>
+      <p>Updated answer:</p>
+      <div><textarea name="content" rows="3" cols="60">{{item.content}}</textarea></div>
+      {% if item.imageURL %}    
+        <div><img src="{{ item.imageURL }}"></img></div>
+        {% endif %}
+      <div>Update image: <input type="file" name="image"></div>
+      <input type="hidden" name="questionKey" value="{{ question.key.urlsafe }}">
+      <div><input type="submit" value="Add a New Answer"></div>
+    </form>
+    {% else %}
+    <h3>Edit Question</h3>
+      <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="form" value="question">
+      <p>Change question title:</p>
+      <div><input type="text" name="title" value="{{item.title}}"></div>
+      <p>Update tags:
+      <input type="checkbox" value="serious" name="tags" {% if "serious" in item.tags %}checked{% endif %}> serious
+      <input type="checkbox" value="funny" name="tags" {% if "funny" in item.tags %}checked{% endif %}> funny
+      <input type="checkbox" value="weird" name="tags" {% if "weird" in item.tags %}checked{% endif %}> weird
+      <input type="checkbox" value="rhetorical" name="tags" {% if "rhetorical" in item.tags %}checked{% endif %}> rhetorical
+      <input type="checkbox" value="socratic" name="tags" {% if "socratic" in item.tags %}checked{% endif %}> socratic
+      <input type="checkbox" value="impertinent" name="tags" {% if "impertinent" in item.tags %}checked{% endif %}> impertinent
+      <input type="checkbox" value="unreasonable" name="tags" {% if "unreasonable" in item.tags %}checked{% endif %}> unreasonable
+      </p>
+      <p>Update question:</p>
+      <div><textarea name="content" rows="3" cols="60">{{item.content}}</textarea></div>
+      {% if item.imageURL %}    
+        <div><img src="{{ item.imageURL }}"></img></div>
+        {% endif %}
+      <div>Update image: <input type="file" name="image"></div>
+      <div><input type="submit" value="Add a New Question"></div>
+    </form>
+
+    {% endif %}
+        </body>
+</html>
