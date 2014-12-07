@@ -3,26 +3,28 @@
 
 </head>
   <body>
-
+{% if user == item.author %}
     {% if type == "answer" %}
     <h3>Edit Answer</h3>
       <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="form" value="answer">
+                <input type="hidden" name="form" value="editAnswer">
+                <input type="hidden" name="key" value="{{ item.key.urlsafe }}">   
       <p>Change answer title:</p>
       <div><input type="text" name="title" value="{{item.title}}"></div>
       <p>Updated answer:</p>
       <div><textarea name="content" rows="3" cols="60">{{item.content}}</textarea></div>
       {% if item.imageURL %}    
-        <div><img src="{{ item.imageURL }}"></img></div>
+        <div><a href="{{ item.imageURL}} "><img src="{{ item.imageURL }}"></img></a></div>
         {% endif %}
       <div>Update image: <input type="file" name="image"></div>
       <input type="hidden" name="questionKey" value="{{ question.key.urlsafe }}">
-      <div><input type="submit" value="Add a New Answer"></div>
+      <div><input type="submit" value="Edit Answer"></div>
     </form>
     {% else %}
     <h3>Edit Question</h3>
       <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="form" value="question">
+        <input type="hidden" name="form" value="editQuestion">
+        <input type="hidden" name="key" value="{{ item.key.urlsafe }}">    
       <p>Change question title:</p>
       <div><input type="text" name="title" value="{{item.title}}"></div>
       <p>Update tags:
@@ -35,14 +37,15 @@
       <input type="checkbox" value="unreasonable" name="tags" {% if "unreasonable" in item.tags %}checked{% endif %}> unreasonable
       </p>
       <p>Update question:</p>
-      <div><textarea name="content" rows="3" cols="60">{{item.content}}</textarea></div>
+      <div><textarea name="content" rows="3" cols="60">{{ item.content }}</textarea></div>
       {% if item.imageURL %}    
-        <div><img src="{{ item.imageURL }}"></img></div>
+        <div><a href="{{ item.imageURL}} "><img src="{{ item.imageURL }}"></img></a></div>
         {% endif %}
       <div>Update image: <input type="file" name="image"></div>
-      <div><input type="submit" value="Add a New Question"></div>
+      <div><input type="submit" value="Edit Question"></div>
     </form>
 
+    {% endif %}
     {% endif %}
         </body>
 </html>

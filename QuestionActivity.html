@@ -5,12 +5,12 @@
   <body>
         <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
                 <h2>Question/Answer Activity</h2>
-          <b>{{ question.author.nickname }}/{{ question.title }}</b>
+          <b>{{ question.author.nickname }}: {{ question.title }}</b>
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
       <p>{{ question.content|escape }}</p>
                       {% if question.imageURL %}        
-        <div><img src="{{ question.imageURL }}"></img></div>
+        <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></img></div>
           {% endif %}
 
       <p><a href="/">Back to Main Page</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
@@ -18,16 +18,17 @@
         <h3>Answer List:</h3>
         <hr>
       {% for answer in answers %}
-        <strong>{{ answer.author.nickname }}/{{ answer.title }}</strong>
+        <strong>{{ answer.author.nickname }}: {{ answer.title }}</strong>
         <div><i>{{answer.date}}</i></div>
       <p>{{ answer.content|escape|urlize }}
                 {% if answer.imageURL %}        
-        <div><img src="{{ answer.imageURL }}"></img></div>
+        <div><a href="{{ answer.imageURL}} "><img src="{{ answer.imageURL }}"></img></a></img></div>
           {% endif %}
         </p>
       {% if answer.author == user %}<p><a href="/Edit?key={{ answer.key.urlsafe }}&type=answer">Edit Answer</a></p>{% endif %}
       <hr>
       {% endfor %}
+      <a href="/">Back to Main Page</a>
           {% if user %}
     <h3>Give an Answer</h3>
       <form action="{{ upload_url }}" method="post" enctype="multipart/form-data">

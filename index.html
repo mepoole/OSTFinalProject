@@ -9,18 +9,35 @@
       <br>
         <h1>The Question Forum</h1>
       <h3>Question List:</h3>
-      {% for question in questions %}
+      {% for question, upVote, downVote in questionAndVotes %}
+
         <strong>{{ question.author.nickname }}/{{ question.title }}</strong>
         <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
+        <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
       <p>{{ question.content|slice:":500"|escape|urlize }}
       {% if question.content|slice:":500" != question.content%}
         <strong><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">. . .</a></strong>
       {% endif %}
                 {% if question.imageURL %}        
-        <div><img src="{{ question.imageURL }}"></img></div>
+        <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></div>
           {% endif %}
         </p>
+      <table><tr><td>
+      <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ question.key.urlsafe }}">
+        <input type="hidden" name="type" value="question">
+        <input type="hidden" name="vote" value="up">
+        <input type="submit" value="Vote Up">
+      </form>
+      </td><td>
+      <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ question.key.urlsafe }}">
+        <input type="hidden" name="type" value="question">
+        <input type="hidden" name="vote" value="down">
+        <input type="submit" value="Vote Down">
+      </form>
+      </td></tr></table>
       <p><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">View Full Question</a> | <a href="/QuestionActivity?questionKey={{ question.key.urlsafe }}">View Question/Answer Activity</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
 
       <hr>
