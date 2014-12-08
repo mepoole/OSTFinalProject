@@ -3,10 +3,11 @@
 
 </head>
   <body>
-          <b>{{ question.author.nickname }}/{{ question.title }}</b>
+          <b>{{ question.author.nickname }}: {{ question.title }}</b>
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
-      <p>{{ question.content|escape }}</p>
+        <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
+      <p>{{ question.content|escape|urlize}}</p>
                       {% if question.imageURL %}        
         <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></div>
           {% endif %}

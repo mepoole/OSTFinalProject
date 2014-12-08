@@ -9,6 +9,7 @@ from google.appengine.ext.webapp import template
 import webapp2
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
+template.register_template_library('templatetags.imagerender')
 
 
 DEFAULT_FORUM_NAME = 'mep505'
@@ -36,6 +37,7 @@ class Answer(ndb.Model):
 
 class Vote(ndb.Model):
     author = ndb.UserProperty()
+    voteType = ndb.StringProperty()
     #true if an up vote, false if a down vote
     vote = ndb.BooleanProperty()
 
@@ -44,9 +46,19 @@ class QuestionDetail(webapp2.RequestHandler):
         if self.request.get('questionKey'):
             questionKey=self.request.get('questionKey')
             question=ndb.Key(urlsafe=questionKey).get()
+            votes = Vote.query(ancestor=question.key).fetch()
+            questionUp=0
+            questionDown=0
+            for vote in votes:
+                if vote.vote:
+                    questionUp += 1
+                else:
+                    questionDown += 1
+            questionVotes=(questionUp, questionDown)
             template_values = {
             'user' : users.get_current_user(),
             'question' : question,
+            'questionVotes' : questionVotes
         }
         
         path = os.path.join(os.path.dirname(__file__), 'QuestionDetail.html')
@@ -58,7 +70,29 @@ class QuestionActivity(webapp2.RequestHandler):
             upload_url = blobstore.create_upload_url('/upload')
             questionKey=ndb.Key(urlsafe=self.request.get('questionKey'))
             question=questionKey.get()
+            votes = Vote.query(Vote.voteType=="question", ancestor=questionKey).fetch()
+            questionUp=0
+            questionDown=0
+            for vote in votes:
+                if vote.vote:
+                    questionUp += 1
+                else:
+                    questionDown += 1
+            questionVotes=(questionUp, questionDown)
             answers = Answer.query(ancestor=questionKey).order(-Answer.date)
+            answerVotes = Vote.query(ancestor=questionKey).fetch()
+            answersAndVotes=[]
+            for answer in answers:
+                answerVotes = Vote.query(ancestor=answer.key).fetch()
+                totalUp=0
+                totalDown=0
+                for vote in answerVotes:
+                    if vote.vote:
+                        totalUp += 1
+                    else:
+                        totalDown += 1
+                answersAndVotes.append((answer, totalUp, totalDown))
+            answersAndVotes.sort(key=lambda a: a[2] - a[1])
             if users.get_current_user():
                 url = users.create_logout_url(self.request.uri)
                 url_linktext = 'Logout'
@@ -68,8 +102,10 @@ class QuestionActivity(webapp2.RequestHandler):
             template_values = {
             'user' : users.get_current_user(),
             'question' : question,
-            'upload_url' : upload_url,
+            'questionVotes' : questionVotes,
+            'answersAndVotes' : answersAndVotes,
             'answers' : answers,
+            'upload_url' : upload_url,
             'url': url,
             'url_linktext': url_linktext,
         }
@@ -152,14 +188,13 @@ class ProcessVote(webapp2.RequestHandler):
     def post(self):
         if self.request.get('key'):
             #check to see if vote already exists
-            getVote = Vote.query(Vote.author==users.get_current_user(), ancestor=ndb.Key(urlsafe=self.request.get('key'))).get()         
+            getVote = Vote.query(Vote.author==users.get_current_user(), Vote.voteType ==self.request.get('type'), ancestor=ndb.Key(urlsafe=self.request.get('key'))).get()         
             if getVote:
                 if self.request.get('vote') == "up":
                     getVote.vote=True
                 else:
                     getVote.vote=False
                 getVote.put()
-                self.redirect('/')
             else:
                 vote=Vote(parent=ndb.Key(urlsafe=self.request.get('key')))
                 vote.author=users.get_current_user()
@@ -167,8 +202,10 @@ class ProcessVote(webapp2.RequestHandler):
                     vote.vote=True
                 else:
                     vote.vote=False
+                vote.voteType=self.request.get('type') 
                 vote.put()
-                self.redirect('/')
+            prevURL = os.getenv('HTTP_REFERER')
+            self.redirect(prevURL)
             
 
 class MainPage(webapp2.RequestHandler):
@@ -197,7 +234,7 @@ class MainPage(webapp2.RequestHandler):
         for question in questions:
             totalUp=0
             totalDown=0
-            votes = Vote.query(ancestor=question.key).fetch()
+            votes = Vote.query(Vote.voteType=="question", ancestor=question.key).fetch()
             for vote in votes:
                 if vote.vote:
                     totalUp += 1
@@ -209,7 +246,6 @@ class MainPage(webapp2.RequestHandler):
         
         template_values = {
             'user' : users.get_current_user(),
-            'questions' : questions,
             'questionAndVotes' : questionAndVotes,
             'offset': offset,
             'nextLink': nextLink,

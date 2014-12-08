@@ -8,23 +8,54 @@
           <b>{{ question.author.nickname }}: {{ question.title }}</b>
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
-      <p>{{ question.content|escape }}</p>
+                <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
+      <p>{{ question.content|escape|urlize }}</p>
                       {% if question.imageURL %}        
         <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></img></div>
           {% endif %}
-
+      <table><tr><td>
+      <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ question.key.urlsafe }}">
+        <input type="hidden" name="type" value="question">
+        <input type="hidden" name="vote" value="up">
+        <input type="submit" value="Vote Up">
+      </form>
+      </td><td>
+      <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ question.key.urlsafe }}">
+        <input type="hidden" name="type" value="question">
+        <input type="hidden" name="vote" value="down">
+        <input type="submit" value="Vote Down">
+      </form>
+      </td></tr></table>
       <p><a href="/">Back to Main Page</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
       <hr>
         <h3>Answer List:</h3>
         <hr>
-      {% for answer in answers %}
+      {% for answer, upVote, downVote in answersAndVotes %}
         <strong>{{ answer.author.nickname }}: {{ answer.title }}</strong>
         <div><i>{{answer.date}}</i></div>
+        <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
       <p>{{ answer.content|escape|urlize }}
                 {% if answer.imageURL %}        
         <div><a href="{{ answer.imageURL}} "><img src="{{ answer.imageURL }}"></img></a></img></div>
           {% endif %}
         </p>
+            <table><tr><td>
+            <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ answer.key.urlsafe }}">
+        <input type="hidden" name="type" value="answer">
+        <input type="hidden" name="vote" value="up">
+        <input type="submit" value="Vote Up">
+      </form>
+      </td><td>
+      <form action="/ProcessVote" method="post">
+        <input type="hidden" name="key" value="{{ answer.key.urlsafe }}">
+        <input type="hidden" name="type" value="answer">
+        <input type="hidden" name="vote" value="down">
+        <input type="submit" value="Vote Down">
+      </form>
+            </td></tr></table>
       {% if answer.author == user %}<p><a href="/Edit?key={{ answer.key.urlsafe }}&type=answer">Edit Answer</a></p>{% endif %}
       <hr>
       {% endfor %}
