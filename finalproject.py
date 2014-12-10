@@ -243,7 +243,7 @@ class MainPage(webapp2.RequestHandler):
             questionAndVotes.append((question, totalUp, totalDown))
         #for question in questions:
             #question.key.delete()
-        
+        image="B http://www.byui.edu/images/agriculture-life-sciences/flower.jpg http://google.com/butterfly.jpg http://google.com/butterfly.png  http://www.google.com something else h"
         template_values = {
             'user' : users.get_current_user(),
             'questionAndVotes' : questionAndVotes,
@@ -253,6 +253,7 @@ class MainPage(webapp2.RequestHandler):
             'url': url,
             'url_linktext': url_linktext,
             'upload_url': upload_url,
+            'image' : image
         }
         
         path = os.path.join(os.path.dirname(__file__), 'index.html')

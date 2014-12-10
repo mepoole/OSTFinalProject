@@ -15,7 +15,9 @@
         <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
         <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
-      <p>{{ question.content|slice:":500"|urlize|imagerender }}
+              {% autoescape off %}
+      <p>{{ question.content|slice:":500"|imagerender}}
+      {% endautoescape %}
       {% if question.content|slice:":500" != question.content%}
         <strong><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">. . .</a></strong>
       {% endif %}
