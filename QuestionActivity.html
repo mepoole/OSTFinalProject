@@ -9,10 +9,13 @@
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
                 <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
-      <p>{{ question.content|escape|urlize }}</p>
+                              {% autoescape off %}
+      <p>{{ question.content|imagerender}}</p>
+            {% endautoescape %}
                       {% if question.imageURL %}        
         <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></img></div>
           {% endif %}
+                    {% if user %}
       <table><tr><td>
       <form action="/ProcessVote" method="post">
         <input type="hidden" name="key" value="{{ question.key.urlsafe }}">
@@ -28,6 +31,7 @@
         <input type="submit" value="Vote Down">
       </form>
       </td></tr></table>
+                {% endif %}
       <p><a href="/">Back to Main Page</a> {% if question.author == user %}| <a href="/Edit?key={{ question.key.urlsafe }}&type=question">Edit Question</a>{% endif %}</p>
       <hr>
         <h3>Answer List:</h3>

@@ -7,7 +7,9 @@
                   <div><i>{{question.date}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
         <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
-      <p>{{ question.content|escape|urlize}}</p>
+                              {% autoescape off %}
+      <p>{{ question.content|imagerender}}</p>
+            {% endautoescape %}
                       {% if question.imageURL %}        
         <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></div>
           {% endif %}
