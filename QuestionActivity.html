@@ -6,7 +6,8 @@
         <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
                 <h2>Question/Answer Activity</h2>
           <b>{{ question.author.nickname }}: {{ question.title }}</b>
-                  <div><i>{{question.date}}</i></div>
+        <div><i>Created: {{question.date}}</i></div>
+        <div><i>Last Modified: {{question.modDate}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
                 <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
                               {% autoescape off %}
@@ -38,7 +39,8 @@
         <hr>
       {% for answer, upVote, downVote in answersAndVotes %}
         <strong>{{ answer.author.nickname }}: {{ answer.title }}</strong>
-        <div><i>{{answer.date}}</i></div>
+        <div><i>Created: {{answer.date}}</i></div>
+        <div><i>Last Modified: {{answer.modDate}}</i></div>
         <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
       <p>{{ answer.content|escape|urlize }}
                 {% if answer.imageURL %}        

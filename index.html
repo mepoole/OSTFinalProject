@@ -12,7 +12,8 @@
       {% for question, upVote, downVote in questionAndVotes %}
 
         <strong>{{ question.author.nickname }}: {{ question.title }}</strong>
-        <div><i>{{question.date}}</i></div>
+        <div><i>Created: {{question.date}}</i></div>
+        <div><i>Last Modified: {{question.modDate}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
         <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
               {% autoescape off %}

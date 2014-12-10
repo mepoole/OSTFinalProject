@@ -25,7 +25,8 @@ class Question(ndb.Model):
     tags = ndb.JsonProperty()
     image = ndb.BlobKeyProperty()
     imageURL = ndb.StringProperty()
-    date = ndb.DateTimeProperty(auto_now=True)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+    modDate= ndb.DateTimeProperty(auto_now=True)
     
 class Answer(ndb.Model):
     author = ndb.UserProperty()
@@ -33,7 +34,8 @@ class Answer(ndb.Model):
     content = ndb.StringProperty(indexed=False)
     image = ndb.BlobKeyProperty()
     imageURL = ndb.StringProperty()
-    date = ndb.DateTimeProperty(auto_now=True)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+    modDate= ndb.DateTimeProperty(auto_now=True)
 
 class Vote(ndb.Model):
     author = ndb.UserProperty()

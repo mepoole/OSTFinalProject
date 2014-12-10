@@ -4,7 +4,8 @@
 </head>
   <body>
           <b>{{ question.author.nickname }}: {{ question.title }}</b>
-                  <div><i>{{question.date}}</i></div>
+        <div><i>Created: {{question.date}}</i></div>
+        <div><i>Last Modified: {{question.modDate}}</i></div>
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
         <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
                               {% autoescape off %}
