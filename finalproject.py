@@ -43,6 +43,10 @@ class Vote(ndb.Model):
     #true if an up vote, false if a down vote
     vote = ndb.BooleanProperty()
 
+class Favorites(ndb.Model):
+    author = ndb.UserProperty()
+    question=ndb.KeyProperty(kind=Question)
+
 class QuestionDetail(webapp2.RequestHandler):
     def get(self):
         if self.request.get('questionKey'):
@@ -208,13 +212,60 @@ class ProcessVote(webapp2.RequestHandler):
                 vote.put()
             prevURL = os.getenv('HTTP_REFERER')
             self.redirect(prevURL)
-            
+
+class AddFavorite(webapp2.RequestHandler):
+    def post(self):
+        if users.get_current_user() and self.request.get('key'):
+            if self.request.get('action')=="add":
+                favorite=Favorites()
+                favorite.author=users.get_current_user()
+                favorite.question=ndb.Key(urlsafe=self.request.get('key'))
+                favorite.put()
+                prevURL = os.getenv('HTTP_REFERER')
+                self.redirect(prevURL)
+            elif self.request.get('action')=="remove":
+                favorites=Favorites.query(Favorites.author==users.get_current_user(), Favorites.question==ndb.Key(urlsafe=self.request.get('key'))).fetch()
+                for favorite in favorites:
+                   favorite.key.delete()
+                   prevURL = os.getenv('HTTP_REFERER')
+                   self.redirect(prevURL)
+    
+class FavoritesView(webapp2.RequestHandler):
+    def get(self):
+        if users.get_current_user():
+            favorites=Favorites.query(Favorites.author==users.get_current_user()).fetch()
+            questions=[]
+            for favorite in favorites:
+                questions.append(favorite.question.get())
+            questionAndVotes= []
+            for question in questions:
+                totalUp=0
+                totalDown=0
+                votes = Vote.query(Vote.voteType=="question", ancestor=question.key).fetch()
+                for vote in votes:
+                    if vote.vote:
+                        totalUp += 1
+                    else:
+                        totalDown += 1
+                questionAndVotes.append((question, totalUp, totalDown))
+            template_values = {
+                'user': users.get_current_user(),
+                'questionAndVotes': questionAndVotes,
+                'favorites':favorites
+            }
+        
+            path = os.path.join(os.path.dirname(__file__), 'FavoritesView.html')
+            self.response.out.write(template.render(path, template_values))
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
+        favoriteKeys=[]
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
             url_linktext = 'Logout'
+            favorites=Favorites.query(Favorites.author==users.get_current_user()).fetch()
+            for favorite in favorites:
+                favoriteKeys.append(favorite.question)
         else:
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
@@ -254,6 +305,7 @@ class MainPage(webapp2.RequestHandler):
             'url': url,
             'url_linktext': url_linktext,
             'upload_url': upload_url,
+            'favoritesKeys': favoriteKeys
         }
         
         path = os.path.join(os.path.dirname(__file__), 'index.html')
@@ -266,5 +318,7 @@ application = webapp2.WSGIApplication([
     ('/upload', UploadHandler),
     ('/QuestionActivity', QuestionActivity),
     ('/Edit', Edit),
-    ('/ProcessVote', ProcessVote)
+    ('/ProcessVote', ProcessVote),
+    ('/AddFavorite', AddFavorite),
+    ('/FavoritesView', FavoritesView)
 ], debug=True)
