@@ -1,25 +1,15 @@
-
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
-	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:atom="http://www.w3.org/2005/Atom"
 	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-	>
+		>
 <channel>
-    <title>Question Forum</title>
-    <link>http://localhost:9080/</link>
-    <description>A question and Answer forum</description>
-    {% for question in questions %}
-    <item>
+<channel>
             <title>{{ question.title }}</title>
             <pubdate>{{ question.modDate }}</pubdate>
             <link>http://localhost:9080/QuestionDetail?questionKey={{ question.key.urlsafe }}</link>
             <description>{{ question.content }}</description>
-    </item>
-    {%endfor%}
     {% for answer in answers %}
         <item>
             <title>{{ answer.title }}</title>
@@ -29,3 +19,4 @@
     </item>
     {%endfor%}
 </channel>
+</rss>

@@ -257,6 +257,21 @@ class FavoritesView(webapp2.RequestHandler):
             path = os.path.join(os.path.dirname(__file__), 'FavoritesView.html')
             self.response.out.write(template.render(path, template_values))
 
+class RSS(webapp2.RequestHandler):
+    def get(self):
+        if self.request.get('question'):
+            questionKey=ndb.Key(urlsafe=self.request.get('question'))
+            question=questionKey.get()
+            answers = Answer.query(ancestor=questionKey).order(-Answer.date)
+            template_values = {
+                'question': question,
+                'answers': answers
+            }
+            self.response.headers['Content-Type'] = 'application/rss+xml'
+            path = os.path.join(os.path.dirname(__file__), 'RSS.xml')
+            self.response.out.write(template.render(path, template_values))
+
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
         favoriteKeys=[]
@@ -320,5 +335,6 @@ application = webapp2.WSGIApplication([
     ('/Edit', Edit),
     ('/ProcessVote', ProcessVote),
     ('/AddFavorite', AddFavorite),
-    ('/FavoritesView', FavoritesView)
+    ('/FavoritesView', FavoritesView),
+    ('/RSS', RSS)
 ], debug=True)
