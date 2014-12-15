@@ -3,7 +3,7 @@
     <link rel="alternate" type="application/rss+xml" title="{{ question.title }} Feed" href="/RSS?question={{ question.key.urlsafe }}" />
 </head>
   <body>
-        <div style="text-align:right"><a href="{{ url }}">{{ url_linktext }}</a></div>
+        <div style="text-align:right"><a href="{{ loginUrl }}">{{ loginUrl_linktext }}</a></div>
                 <h2>Question/Answer Activity</h2>
           <b>{{ question.author.nickname }}: {{ question.title }}</b>
         <div><i>Created: {{question.date}}</i></div>
@@ -42,7 +42,9 @@
         <div><i>Created: {{answer.date}}</i></div>
         <div><i>Last Modified: {{answer.modDate}}</i></div>
         <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
-      <p>{{ answer.content|escape|urlize }}
+                                      {% autoescape off %}
+      <p>{{ answer.content|imagerender}}
+                  {% endautoescape %}
                 {% if answer.imageURL %}        
         <div><a href="{{ answer.imageURL}} "><img src="{{ answer.imageURL }}"></img></a></img></div>
           {% endif %}

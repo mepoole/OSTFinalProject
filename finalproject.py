@@ -67,8 +67,8 @@ class QuestionDetail(webapp2.RequestHandler):
             'questionVotes' : questionVotes
         }
         
-        path = os.path.join(os.path.dirname(__file__), 'QuestionDetail.html')
-        self.response.out.write(template.render(path, template_values))
+            path = os.path.join(os.path.dirname(__file__), 'QuestionDetail.html')
+            self.response.out.write(template.render(path, template_values))
 
 class QuestionActivity(webapp2.RequestHandler):
     def get(self):
@@ -87,6 +87,7 @@ class QuestionActivity(webapp2.RequestHandler):
             questionVotes=(questionUp, questionDown)
             answers = Answer.query(ancestor=questionKey).order(-Answer.date)
             answerVotes = Vote.query(ancestor=questionKey).fetch()
+            #create a list to store answers, and total number of votes for them
             answersAndVotes=[]
             for answer in answers:
                 answerVotes = Vote.query(ancestor=answer.key).fetch()
@@ -98,13 +99,15 @@ class QuestionActivity(webapp2.RequestHandler):
                     else:
                         totalDown += 1
                 answersAndVotes.append((answer, totalUp, totalDown))
+            #sort answers by difference between up and down votes
             answersAndVotes.sort(key=lambda a: a[2] - a[1])
+            
             if users.get_current_user():
-                url = users.create_logout_url(self.request.uri)
-                url_linktext = 'Logout'
+                loginUrl = users.create_logout_url(self.request.uri)
+                loginUrl_linktext = 'Logout'
             else:
-                url = users.create_login_url(self.request.uri)
-                url_linktext = 'Login'
+                loginUrl = users.create_login_url(self.request.uri)
+                loginUrl_linktext = 'Login'
             template_values = {
             'user' : users.get_current_user(),
             'question' : question,
@@ -112,12 +115,12 @@ class QuestionActivity(webapp2.RequestHandler):
             'answersAndVotes' : answersAndVotes,
             'answers' : answers,
             'upload_url' : upload_url,
-            'url': url,
-            'url_linktext': url_linktext,
+            'loginUrl': loginUrl,
+            'loginUrl_linktext': loginUrl_linktext,
         }
         
-        path = os.path.join(os.path.dirname(__file__), 'QuestionActivity.html')
-        self.response.out.write(template.render(path, template_values))
+            path = os.path.join(os.path.dirname(__file__), 'QuestionActivity.html')
+            self.response.out.write(template.render(path, template_values))
 
 class Edit(webapp2.RequestHandler):
     def get(self):
@@ -131,12 +134,13 @@ class Edit(webapp2.RequestHandler):
             'item' : item,
             'type' : self.request.get('type'),
         }
-        path = os.path.join(os.path.dirname(__file__), 'Edit.html')
-        self.response.out.write(template.render(path, template_values))
+            path = os.path.join(os.path.dirname(__file__), 'Edit.html')
+            self.response.out.write(template.render(path, template_values))
     
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     #handles all question and answer creations and edits
   def post(self):
+    #new question being submitted
     if self.request.get('form') == 'question':
         question=Question(parent=forum_key())
         question.content = self.request.get('content')
@@ -150,6 +154,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
             question.imageURL = images.get_serving_url(blob_info.key())
         question.put()
         self.redirect('/')
+    #new answer being submitted
     elif self.request.get('form') == 'answer':
         answer=Answer(parent=ndb.Key(urlsafe=self.request.get('questionKey')))
         answer.content = self.request.get('content')
@@ -163,6 +168,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         answer.put()
         redirectURL = "/QuestionActivity?questionKey=%s" % self.request.get('questionKey')
         self.redirect(redirectURL)
+    #answer edit submitted
     elif self.request.get('form') == 'editAnswer':
         answerKey=ndb.Key(urlsafe=self.request.get('key'))
         answer=answerKey.get()
@@ -176,6 +182,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
         answer.put()
         redirectURL = "/QuestionActivity?questionKey=%s" % answerKey.parent().urlsafe()
         self.redirect(redirectURL)
+    #question edit submitted
     elif self.request.get('form') == 'editQuestion':
         question=ndb.Key(urlsafe=self.request.get('key')).get()
         question.content = self.request.get('content')
@@ -237,6 +244,7 @@ class FavoritesView(webapp2.RequestHandler):
             questions=[]
             for favorite in favorites:
                 questions.append(favorite.question.get())
+                #create a list to store questions, and total number of votes for them
             questionAndVotes= []
             for question in questions:
                 totalUp=0
@@ -276,18 +284,20 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
         favoriteKeys=[]
         if users.get_current_user():
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
+            loginUrl = users.create_logout_url(self.request.uri)
+            loginUrl_linktext = 'Logout'
+            #if a user is logged in, get their favorites
             favorites=Favorites.query(Favorites.author==users.get_current_user()).fetch()
             for favorite in favorites:
                 favoriteKeys.append(favorite.question)
         else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
+            loginUrl = users.create_login_url(self.request.uri)
+            loginUrl_linktext = 'Login'
         upload_url = blobstore.create_upload_url('/upload')
+        
+        #implement paging
         offset=0
         entriesPerPage=10
-        #variable to determine whether to add a "next" or "prev" link
         nextLink=False
         prevLink=False
         if self.request.get('offset') and self.request.get('offset') != '0':
@@ -298,6 +308,8 @@ class MainPage(webapp2.RequestHandler):
         if len(questions)==entriesPerPage+1:
             offset=offset+entriesPerPage
             nextLink=True
+            
+        #create a list to store questions, and total number of votes for them
         questionAndVotes= []
         for question in questions:
             totalUp=0
@@ -317,8 +329,8 @@ class MainPage(webapp2.RequestHandler):
             'offset': offset,
             'nextLink': nextLink,
             'prevLink' : prevLink,
-            'url': url,
-            'url_linktext': url_linktext,
+            'loginUrl': loginUrl,
+            'loginUrl_linktext': loginUrl_linktext,
             'upload_url': upload_url,
             'favoritesKeys': favoriteKeys
         }
@@ -330,8 +342,8 @@ class MainPage(webapp2.RequestHandler):
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/QuestionDetail', QuestionDetail),
-    ('/upload', UploadHandler),
     ('/QuestionActivity', QuestionActivity),
+    ('/upload', UploadHandler),
     ('/Edit', Edit),
     ('/ProcessVote', ProcessVote),
     ('/AddFavorite', AddFavorite),
