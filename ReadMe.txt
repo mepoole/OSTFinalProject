@@ -1,5 +1,4 @@
-DESIG
-N:
+DESIGN:
 
 The project is designed using object oriented principles, and following the guidelines of App Engine.
 Each page is defined as a class instance, and rendered using Django templates. The page classes and their corresponding html templates are listed and described below:
@@ -26,10 +25,12 @@ FEATURES:
 The project implements the following features:
 
 -New questions can be submitted using the form at the bottom of the index page. New answers can be submitted at the bottom of the "QuestionActivity" page.
+-Users that are signed in are able to vote. A user can only vote once, up or down per question or answer. If they click the "vote down" button after having voted up, their vote will be changed to down, and vice versa.
 -The project supports users with the Google App Engine Python user API. There are "login" links in the upper right hand side of the main page. When a user is logged out, they have no ability to create or edit questions or answers, vote, or favorite questions.
+-Users can view questions with a specific tag by clicking on that tag.
 -Users who have created a question or answer are allowed to edit them. "Edit Question" and "Edit Answer" links will appear below a question or answer if the user has created the item.
 -Paging is implemented for the index page. 10 questions are displayed per page. Users can access next or previous pages by clicking the "next" or "prev" link at the bottom of the question list.
 -Answers listed on the "QuestionActivity" page are sorted by the different between up and down votes, with the largest difference appearing first.
--Questions or answers can contain images. This can be accomplished by uploading the image when adding or editing a question or answer, or by adding a link to an image within the body of the question.
+-Questions or answers can contain images. This can be accomplished by uploading the image when adding or editing a question or answer, or by adding a link to an image within the body of the question. Images that are uploaded are clickable links to permalink versions of the image.
 -URLs that are added to questions or answers are rendered as hyperlinks. This, as well as the rendering of images inline, is accomplished by a custom Django filter in the file "imagerender.py"
 -Extra credit: A user can "favorite" certain questions, by clicking the "Add to Favorites" button below the question on the main page. The list of favorites is accessible via a link at the top right of the main page. Once a question is favorited, there is the option to remove it via a "Remove from Favorites" button where the add button formerly was.

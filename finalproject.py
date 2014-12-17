@@ -223,6 +223,7 @@ class ProcessVote(webapp2.RequestHandler):
 class AddFavorite(webapp2.RequestHandler):
     def post(self):
         if users.get_current_user() and self.request.get('key'):
+            #add a favorite
             if self.request.get('action')=="add":
                 favorite=Favorites()
                 favorite.author=users.get_current_user()
@@ -230,6 +231,7 @@ class AddFavorite(webapp2.RequestHandler):
                 favorite.put()
                 prevURL = os.getenv('HTTP_REFERER')
                 self.redirect(prevURL)
+            #remove a favorite
             elif self.request.get('action')=="remove":
                 favorites=Favorites.query(Favorites.author==users.get_current_user(), Favorites.question==ndb.Key(urlsafe=self.request.get('key'))).fetch()
                 for favorite in favorites:
@@ -303,8 +305,19 @@ class MainPage(webapp2.RequestHandler):
         if self.request.get('offset') and self.request.get('offset') != '0':
             offset=int(self.request.get('offset'))
             prevLink=True
-        questions = Question.query(ancestor=forum_key()).order(-Question.date)
-        questions=questions.fetch(entriesPerPage+1, offset=offset)
+            
+        #return tagged entries only
+        if self.request.get('tag'):
+            questionsRaw=Question.query(ancestor=forum_key()).order(-Question.modDate).fetch()
+            questions =[]
+            for question in questionsRaw:
+                if self.request.get('tag') in question.tags:
+                    questions.append(question)
+        #default view 
+        else:
+            questions = Question.query(ancestor=forum_key()).order(-Question.modDate)
+            questions=questions.fetch(entriesPerPage+1, offset=offset)
+            
         if len(questions)==entriesPerPage+1:
             offset=offset+entriesPerPage
             nextLink=True
@@ -321,8 +334,6 @@ class MainPage(webapp2.RequestHandler):
                 else:
                     totalDown += 1
             questionAndVotes.append((question, totalUp, totalDown))
-        #for question in questions:
-            #question.key.delete()
         template_values = {
             'user' : users.get_current_user(),
             'questionAndVotes' : questionAndVotes,

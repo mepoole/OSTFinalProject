@@ -14,7 +14,7 @@
         <strong>{{ question.author.nickname }}: {{ question.title }}</strong>
         <div><i>Created: {{question.date}}</i></div>
         <div><i>Last Modified: {{question.modDate}}</i></div>
-        <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
+        <div>Tags: {% for tag in question.tags %} <a href="/?tag={{ tag }}">-{{ tag }}</a> {% endfor %}</div>
         <div>Votes: +{{ upVote }}, -{{ downVote }}</div>
               {% autoescape off %}
       <p>{{ question.content|slice:":500"|imagerender}}

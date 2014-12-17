@@ -49,6 +49,7 @@
         <div><a href="{{ answer.imageURL}} "><img src="{{ answer.imageURL }}"></img></a></img></div>
           {% endif %}
         </p>
+                          {% if user %}
             <table><tr><td>
             <form action="/ProcessVote" method="post">
         <input type="hidden" name="key" value="{{ answer.key.urlsafe }}">
@@ -64,6 +65,7 @@
         <input type="submit" value="Vote Down">
       </form>
             </td></tr></table>
+                            {% endif %}
       {% if answer.author == user %}<p><a href="/Edit?key={{ answer.key.urlsafe }}&type=answer">Edit Answer</a></p>{% endif %}
       <hr>
       {% endfor %}
