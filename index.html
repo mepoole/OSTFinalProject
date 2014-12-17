@@ -3,7 +3,6 @@
 
 </head>
   <body>
-    
     <div style="text-align:right">{% if user %} <a href="/FavoritesView">View Favorites</a>   {% endif %}<a href="{{ loginUrl }}">{{ loginUrl_linktext}}</a></div>
 
       <br>
@@ -23,7 +22,8 @@
         <strong><a href="/QuestionDetail?questionKey={{ question.key.urlsafe }}">. . .</a></strong>
       {% endif %}
                 {% if question.imageURL %}        
-        <div><a href="{{ question.imageURL}} "><img src="{{ question.imageURL }}"></img></a></div>
+        <div><a href="/Image?questionKey={{ question.key.urlsafe }}"><img src="/Image?questionKey={{ question.key.urlsafe }}"></img></a></div>
+          <div>Image permalink:</div><div style="font-size:80%">http://civil-empire-796.appspot.com/Image?questionKey={{ question.key.urlsafe }} </div>      
           {% endif %}
         </p>
           {% if user %}

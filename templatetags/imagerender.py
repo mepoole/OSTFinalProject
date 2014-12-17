@@ -16,8 +16,12 @@ def imagerender(text, autoescape=None):
         if re.match("(^https?://[^\s]+[(\.jpg), (\.gif), (\.png)]$)", word):
             words[i] = "<img src='"+word+ "'>"
             words[i]=mark_safe(words[i])
-        #check if it's an image from the blob store
+        #LOCALHOST: check if it's an image from the blob store 
         elif re.match("(^http://localhost:9080/_ah/img/)", word):
+            words[i] = "<img src='"+word+ "'>"
+            words[i]=mark_safe(words[i])
+        #Live site: check if it's an image from the blob store 
+        elif re.match("(^http://civil-empire-796\.appspot\.com/Image\?questionKey)", word):
             words[i] = "<img src='"+word+ "'>"
             words[i]=mark_safe(words[i])
         #checking for regular links

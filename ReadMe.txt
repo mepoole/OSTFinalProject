@@ -19,6 +19,7 @@ In addition to class instances for pages, classes are used to define datatypes f
 -Answer class: This defines an answer submitted by a user. Its parent is a Question object.
 -Vote class: This defines a user's vote. It's parent is either the Question or Answer object that the user has voted on.
 -Favorites class: This defines Questions that are favorited by a given user.
+-Image class: This class redirects to images from the Blobstore. It creates a permalink that enables pattern matching to display images from the blobstore.
 
 FEATURES:
 
@@ -31,6 +32,6 @@ The project implements the following features:
 -Users who have created a question or answer are allowed to edit them. "Edit Question" and "Edit Answer" links will appear below a question or answer if the user has created the item.
 -Paging is implemented for the index page. 10 questions are displayed per page. Users can access next or previous pages by clicking the "next" or "prev" link at the bottom of the question list.
 -Answers listed on the "QuestionActivity" page are sorted by the different between up and down votes, with the largest difference appearing first.
--Questions or answers can contain images. This can be accomplished by uploading the image when adding or editing a question or answer, or by adding a link to an image within the body of the question. Images that are uploaded are clickable links to permalink versions of the image.
+-Questions or answers can contain images. This can be accomplished by uploading the image when adding or editing a question or answer, or by adding a link to an image within the body of the question. When adding an inline link to an image that's already been uploaded, the permalink needs to be included. This permalink is displayed below the uploaded image in the post.
 -URLs that are added to questions or answers are rendered as hyperlinks. This, as well as the rendering of images inline, is accomplished by a custom Django filter in the file "imagerender.py"
 -Extra credit: A user can "favorite" certain questions, by clicking the "Add to Favorites" button below the question on the main page. The list of favorites is accessible via a link at the top right of the main page. Once a question is favorited, there is the option to remove it via a "Remove from Favorites" button where the add button formerly was.

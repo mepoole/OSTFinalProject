@@ -8,8 +8,10 @@ from google.appengine.api import images
 from google.appengine.ext.webapp import template
 import webapp2
 from google.appengine.ext import blobstore
+from google.appengine.ext.blobstore import BlobInfo
 from google.appengine.ext.webapp import blobstore_handlers
 template.register_template_library('templatetags.imagerender')
+import urllib2
 
 
 DEFAULT_FORUM_NAME = 'mep505'
@@ -46,7 +48,14 @@ class Vote(ndb.Model):
 class Favorites(ndb.Model):
     author = ndb.UserProperty()
     question=ndb.KeyProperty(kind=Question)
-
+    
+class Image (webapp2.RequestHandler):
+    def get(self):
+        if self.request.get('questionKey'):
+            questionKey=self.request.get('questionKey')
+            question=ndb.Key(urlsafe=questionKey).get()
+            self.redirect(str(question.imageURL))
+        
 class QuestionDetail(webapp2.RequestHandler):
     def get(self):
         if self.request.get('questionKey'):
@@ -359,5 +368,6 @@ application = webapp2.WSGIApplication([
     ('/ProcessVote', ProcessVote),
     ('/AddFavorite', AddFavorite),
     ('/FavoritesView', FavoritesView),
-    ('/RSS', RSS)
+    ('/RSS', RSS),
+    ('/Image', Image)
 ], debug=True)
