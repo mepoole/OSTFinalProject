@@ -9,7 +9,7 @@
         <div>Tags: {% for tag in question.tags %} -{{ tag }} {% endfor %}</div>
         <div>Votes: +{{ questionVotes.0 }}, -{{ questionVotes.1 }}</div>
                               {% autoescape off %}
-      <p>{{ question.content|imagerender}}</p>
+      <p>{{ question.content|escape}}</p>
             {% endautoescape %}
                       {% if question.imageURL %}        
         <div><a href="/Image?questionKey={{ question.key.urlsafe }}"><img src="/Image?questionKey={{ question.key.urlsafe }}"></img></a></div>
